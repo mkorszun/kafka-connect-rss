@@ -19,6 +19,7 @@ import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_DATE_FIELD;
 import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_FEED_FIELD;
 import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_ID_FIELD;
 import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_LINK_FIELD;
+import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_PROVIDER_FIELD;
 import static org.kaliy.kafka.connect.rss.RssSchemas.ITEM_TITLE_FIELD;
 import static org.kaliy.kafka.connect.rss.RssSchemas.VALUE_SCHEMA;
 
@@ -35,6 +36,7 @@ public class Item {
     private final Instant date;
     private final String offset;
     private final Feed feed;
+    private final String provider;
 
     public Item(String title, String link, String id, String content, String author, Instant date, String offset, Feed feed) {
         this.title = title;
@@ -45,6 +47,19 @@ public class Item {
         this.date = date;
         this.offset = offset;
         this.feed = feed;
+        this.provider = null;
+    }
+
+    public Item(String title, String link, String id, String content, String author, Instant date, String offset, Feed feed, String provider) {
+        this.title = title;
+        this.link = link;
+        this.id = id;
+        this.content = content;
+        this.author = author;
+        this.date = date;
+        this.offset = offset;
+        this.feed = feed;
+        this.provider = provider;
     }
 
     public Optional<Struct> toStruct() {
@@ -54,6 +69,7 @@ public class Item {
             feed.getTitle().ifPresent(title -> feedStruct.put(FEED_TITLE_FIELD, title));
 
             Struct struct = new Struct(VALUE_SCHEMA)
+                    .put(ITEM_PROVIDER_FIELD, provider)
                     .put(ITEM_FEED_FIELD, feedStruct)
                     .put(ITEM_LINK_FIELD, link)
                     .put(ITEM_TITLE_FIELD, title)
@@ -117,6 +133,7 @@ public class Item {
         private Instant date;
         private String offset;
         private Feed feed;
+        private String provider;
 
         public static Builder anItem() {
             return new Builder();
@@ -162,6 +179,11 @@ public class Item {
             return this;
         }
 
+        public Builder withProvider(String provider) {
+            this.provider = provider;
+            return this;
+        }
+
         public Builder withItem(Item item) {
             title = item.title;
             link = item.link;
@@ -171,11 +193,12 @@ public class Item {
             date = item.date;
             offset = item.offset;
             feed = item.feed;
+            provider = item.provider;
             return this;
         }
 
         public Item build() {
-            return new Item(title, link, id, content, author, date, offset, feed);
+            return new Item(title, link, id, content, author, date, offset, feed, provider);
         }
     }
 }

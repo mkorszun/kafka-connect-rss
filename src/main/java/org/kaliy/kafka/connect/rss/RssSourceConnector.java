@@ -32,6 +32,9 @@ public class RssSourceConnector extends SourceConnector {
 
     @Override
     public List<Map<String, String>> taskConfigs(int maxTasks) {
+
+        logger.info("Starting Meltwater RSS connector");
+
         List<String> urls = rssSourceConnectorConfig.getUrls();
         if (maxTasks > urls.size()) {
             logger.info("URLs number defined in the configuration file is lower than maximum task number, only {} tasks will be created", urls.size());

@@ -55,7 +55,7 @@ public class RssSourceTask extends SourceTask {
             previouslySentItems.put(url, sentItems);
         });
         feedProviders = config.getUrls().stream()
-                .collect(Collectors.toMap(Function.identity(), feedProviderFactory));
+                .collect(Collectors.toMap(Function.identity(), url -> new FeedProvider(url, config.getProvider())));
     }
 
     @Override

@@ -34,9 +34,14 @@ public class FeedProvider {
     private final Function<String, Optional<SyndFeed>> feedFetcher;
     private final Supplier<Feed.Builder> feedBuilderFactory;
     private final Supplier<Item.Builder> itemBuilderFactory;
+    private final String provider;
 
     public FeedProvider(String url) {
         this(url, feedFetcher(url), Feed.Builder::aFeed, Item.Builder::anItem);
+    }
+
+    public FeedProvider(String url, String provider) {
+        this(url, feedFetcher(url), Feed.Builder::aFeed, Item.Builder::anItem, provider);
     }
 
     public FeedProvider(String url,
@@ -47,6 +52,18 @@ public class FeedProvider {
         this.feedFetcher = feedFetcher;
         this.feedBuilderFactory = feedBuilderFactory;
         this.itemBuilderFactory = itemBuilderFactory;
+        this.provider = "default provider";
+    }
+
+    public FeedProvider(String url,
+        Function<String, Optional<SyndFeed>> feedFetcher,
+        Supplier<Feed.Builder> feedBuilderFactory,
+        Supplier<Item.Builder> itemBuilderFactory, String provider) {
+        this.url = url;
+        this.feedFetcher = feedFetcher;
+        this.feedBuilderFactory = feedBuilderFactory;
+        this.itemBuilderFactory = itemBuilderFactory;
+        this.provider = provider;
     }
 
     public List<Item> getNewEvents(Collection<String> sentItems) {
@@ -70,6 +87,7 @@ public class FeedProvider {
                         .withAuthor(author(entry, syndFeed))
                         .withDate(date(entry))
                         .withFeed(feed)
+                        .withProvider(provider)
                         .build()
         ).collect(Collectors.toList());
 
