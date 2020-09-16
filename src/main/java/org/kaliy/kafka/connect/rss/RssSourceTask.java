@@ -4,6 +4,7 @@ import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.kaliy.kafka.connect.rss.config.RssSourceConnectorConfig;
+import org.kaliy.kafka.connect.rss.model.Envelope;
 import org.kaliy.kafka.connect.rss.model.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.kaliy.kafka.connect.rss.RssSchemas.VALUE_SCHEMA;
+import static org.kaliy.kafka.connect.rss.RssSchemas.ENVELOPE_SCHEMA;
 import static org.kaliy.kafka.connect.rss.config.RssSourceConnectorConfig.OFFSET_DELIMITER_REGEX;
 import static org.kaliy.kafka.connect.rss.config.RssSourceConnectorConfig.OFFSET_KEY;
 
@@ -55,7 +56,7 @@ public class RssSourceTask extends SourceTask {
             previouslySentItems.put(url, sentItems);
         });
         feedProviders = config.getUrls().stream()
-                .collect(Collectors.toMap(Function.identity(), url -> new FeedProvider(url, config.getProvider())));
+                .collect(Collectors.toMap(Function.identity(), url -> new FeedProvider(url, config.getProviderId())));
     }
 
     @Override
@@ -91,15 +92,18 @@ public class RssSourceTask extends SourceTask {
                 .map(item -> item.toStruct().map(struct -> new Entry(struct, item.getOffset())))
                 .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
                 .map(entry ->
-                        new SourceRecord(
+                    {
+                        Struct envelope = new Envelope(feedProvider.getProvider(), "feedId", entry.struct).toStruct().get();
+                        return new SourceRecord(
                                 sourcePartition(url),
                                 entry.offset,
                                 config.getTopic(),
                                 null, // partition will be inferred by the framework
                                 null,
                                 null,
-                                VALUE_SCHEMA,
-                                entry.struct)
+                                ENVELOPE_SCHEMA,
+                            envelope);
+                    }
                 ).collect(Collectors.toList());
     }
 

@@ -22,6 +22,8 @@ class RssSourceConnectorTest {
         properties.put("connector.class", "org.kaliy.kafka.connect.rss.RssSourceConnector");
         properties.put("rss.urls", "http://url.one");
         properties.put("topic", "test_topic");
+        properties.put("providerId", "providerId");
+        properties.put("feedId", "feedId");
         rssSourceConnector.start(properties);
     }
 

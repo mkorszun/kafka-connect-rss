@@ -145,6 +145,8 @@ public class StandaloneKafkaConnect {
         workerProps.put("connector.class", "org.kaliy.kafka.connect.rss.RssSourceConnector");
         workerProps.put("rss.urls", urls);
         workerProps.put("topic", "test_topic");
+        workerProps.put("providerId", "providerID");
+        workerProps.put("feedId", "feedId");
         return workerProps;
     }
 }

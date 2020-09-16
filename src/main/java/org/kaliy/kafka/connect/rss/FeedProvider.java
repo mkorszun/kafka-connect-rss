@@ -34,6 +34,11 @@ public class FeedProvider {
     private final Function<String, Optional<SyndFeed>> feedFetcher;
     private final Supplier<Feed.Builder> feedBuilderFactory;
     private final Supplier<Item.Builder> itemBuilderFactory;
+
+    public String getProvider() {
+        return provider;
+    }
+
     private final String provider;
 
     public FeedProvider(String url) {
@@ -87,7 +92,6 @@ public class FeedProvider {
                         .withAuthor(author(entry, syndFeed))
                         .withDate(date(entry))
                         .withFeed(feed)
-                        .withProvider(provider)
                         .build()
         ).collect(Collectors.toList());
 

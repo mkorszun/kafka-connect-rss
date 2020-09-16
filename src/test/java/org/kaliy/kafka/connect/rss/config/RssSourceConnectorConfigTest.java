@@ -10,6 +10,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.kaliy.kafka.connect.rss.config.RssSourceConnectorConfig.FEED_ID;
+import static org.kaliy.kafka.connect.rss.config.RssSourceConnectorConfig.PROVIDER_ID;
 
 class RssSourceConnectorConfigTest {
     private static final String RSS_URL = "rss.urls";
@@ -23,6 +25,8 @@ class RssSourceConnectorConfigTest {
         config.put(RSS_URL, "http://rss.com/feed.atom");
         config.put(TOPIC, "test_topic");
         config.put(SLEEP_SECONDS, "666");
+        config.put(PROVIDER_ID, "provider");
+        config.put(FEED_ID, "feed");
     }
 
     @Test
